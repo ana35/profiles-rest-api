@@ -1,8 +1,61 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 # Create your models here.
+class UserProfileManager(BaseUserManager):
+    """Helps django to work with our custom user model"""
+
+    def create_user(self, email, name, password):
+        """Creates a new user profile object"""
+
+        if not email:
+            raise ValueError('Users must have an email address.')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name) #creating user object.
+
+        user.set_password(password)
+        user.save(using=self._db) #means use the same DS as while creating the user manager.
+
+        return user
+
+    def create_superuser(self, email, name, password):
+        """Creates and saves a new superuser with given details."""
+
+        user = self.create_user(email, name, password)
+        user.is_superuser = True
+        user.is_staff = True
+
+        user.save(using=self._db)
+
+
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     """Represents a "user profile" inside our system."""
 
-    email = models.
+    email = models.EmailField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False) #used by django user model and it's required when you substitute
+                                                  #the Django user model for our own model.
+
+    #setting object manager.
+    #An object manager is another class that we can use to help manage the user profiles.
+    #It will give us some extra functionality like creating an administrator user or creating
+    #a regular user and again it's required when substituting the custom user model in Django.
+    object = UserProfileManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
+
+    #Helper functions.
+    def get_full_name(self):
+        """Used to get a user's full name"""
+        return self.name
+
+    def get_short_name(self):
+        """Used to get a user's short name"""
+        return self.name
+
+    def __str__(self):
+        """Django uses this when it needs to convert an object to a string"""
+        return self.email
