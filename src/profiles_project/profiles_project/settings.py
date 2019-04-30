@@ -123,3 +123,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'profiles_api.UserProfile' #assign custom user model to Django.
                                              #(to tell django to use our custom model).
+
+
+REST_FRAMEWORK = {
+   'DEFAULT_AUTHENTICATION_CLASSES': (
+       'rest_framework.authentication.TokenAuthentication',
+   ),
+   'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser'
+   ),
+}
