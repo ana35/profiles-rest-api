@@ -2,7 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 # Create your models here.
-class UserProfileManager(BaseUserManager):
+#manager class to manage our custom user model.
+class UserProfileManager(BaseUserManager):  #to overide the default manager to
+                                            #support our custom user model.
     """Helps django to work with our custom user model"""
 
     def create_user(self, email, name, password):
@@ -29,6 +31,7 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
 
 
+#custom model.
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     """Represents a "user profile" inside our system."""
 
