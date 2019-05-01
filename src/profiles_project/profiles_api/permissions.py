@@ -1,13 +1,25 @@
-#checks if the user has access to perform the operation that it is asing for.
 from rest_framework import permissions
 
-class UpdateOwnProfile(permissions.BasePermission):
-    """Allows user to edit their own profile."""
 
-    def has_object_permission(self, request, view, object):
-        """Check user is trying to update their own profile."""
+class UpdateOwnProfile(permissions.BasePermission):
+    """Allow users to edit their own profile."""
+
+    def has_object_permission(self, request, view, obj):
+        """Check user is trying to edit their own profile."""
 
         if request.method in permissions.SAFE_METHODS:
             return True
-        else:
-            return object.id == request.user.id
+
+        return obj.id == request.user.id
+
+
+class PostOwnStatus(permissions.BasePermission):
+    """Allow users to update their own profile."""
+
+    def has_object_permission(self, request, view, obj):
+        """Check the user is trying to update their own status."""
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.user_profile.id == request.user.id
